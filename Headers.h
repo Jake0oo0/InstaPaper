@@ -21,4 +21,5 @@ typedef NS_ENUM(NSUInteger, PLWallpaperMode) {
 
 @interface SBLockScreenManager
 - (void)_finishUIUnlockFromSource:(int)source withOptions:(id)options;
+- (void)lockUIFromSource:(int)source withOptions:(id)options;
 @end

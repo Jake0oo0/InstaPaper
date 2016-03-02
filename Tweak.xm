@@ -39,11 +39,10 @@ static NSDictionary* loadPrefs() {
   [NSURLConnection sendAsynchronousRequest:request
    queue:[NSOperationQueue mainQueue]
    completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
-     if ( !error )
-     {
+    if (!error) {
       UIImage *image = [[UIImage alloc] initWithData:data];
       completionBlock(YES,image);
-    } else{
+    } else {
       completionBlock(NO,nil);
     }
   }];
@@ -53,28 +52,41 @@ static NSDictionary* loadPrefs() {
 static void setWallpaper(UIImage *image, PLWallpaperMode mode) {
   PLStaticWallpaperImageViewController *controller = [[%c(PLStaticWallpaperImageViewController) alloc] initWithUIImage:image];
 
-  int mode = MSHookIvar<NSUInteger>(controller, "_wallpaperMode");
-  mode = PLWallpaperModeBoth;
-
   controller.saveWallpaperData = YES;
+  
+  NSLog(@"MODE %d", (int)mode);
+
+  int modeVar = MSHookIvar<NSUInteger>(controller, "_wallpaperMode");
+  modeVar = mode;
+
   [controller _savePhoto];
 }
 
-static void reloadType(PLWallpaperMode mode) {
+static void reloadType(PLWallpaperMode paperMode) {
   NSString *feedUsername;
-  if (mode == PLWallpaperModeBoth) {
-    reloadType(PLWallpaperModeHomeScreen);
-    reloadType(PLWallpaperModeLockScreen);
-    return;
-  } else if (mode == PLWallpaperModeHomeScreen) {
-
-  } else if (mode == PLWallpaperModeLockScreen) {
-
+  if (paperMode == PLWallpaperModeBoth) {
+    if (![lockUsername isEqualToString:homeUsername]) {
+      NSLog(@"SETTING BOTH DIFFERETN!!");
+      reloadType(PLWallpaperModeHomeScreen);
+      reloadType(PLWallpaperModeLockScreen);
+      return;
+    }
+    NSLog(@"SETTING BOTH SAME");
+    feedUsername = lockUsername;
+  } else if (paperMode == PLWallpaperModeHomeScreen) {
+    NSLog(@"SET HOME SCREEN");
+    feedUsername = homeUsername;
+  } else if (paperMode == PLWallpaperModeLockScreen) {
+    NSLog(@"SET LOCK SCREEN");
+    feedUsername = lockUsername;
   }
-  NSLog(@"[INSTAPAPER]RELOADING FEED!!");
+
+  NSLog(@"USING FEED USERNAME %@", feedUsername);
+
+  if (!feedUsername) return;
+
   NSString *instaString = [NSString stringWithFormat:@"https://www.instagram.com/%@/", feedUsername];
   NSURL *instURL = [NSURL URLWithString:instaString];
-  // NSData *htmlData = [NSData dataWithContentsOfURL:instURL];
 
   NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
   [request setURL:instURL];
@@ -93,8 +105,6 @@ static void reloadType(PLWallpaperMode mode) {
           NSString *content = [element content];
           json = [content stringByReplacingOccurrencesOfString:@"window._sharedData = " withString:@""];
           json = [json substringToIndex:[json length] - 1];
-
-      // NSLog(@"JSON %@", json);
           break;
         }
       }
@@ -102,9 +112,6 @@ static void reloadType(PLWallpaperMode mode) {
 
       NSError *localError = nil;
       NSDictionary *parsedObject = [NSJSONSerialization JSONObjectWithData:[json dataUsingEncoding:NSUTF8StringEncoding] options:0 error:&localError];
-
-  // NSLog(@"JSON DATA %@", parsedObject);
-  // NSLog(@"[INSTAPAPER] NODES %@", nodes);
 
       NSDictionary *entry = [parsedObject objectForKey:@"entry_data"];
       NSArray *profile = [entry objectForKey:@"ProfilePage"];
@@ -126,7 +133,8 @@ static void reloadType(PLWallpaperMode mode) {
 
       [InstaPaperHelper downloadImageWithURL:[NSURL URLWithString:picURL] completionBlock:^(BOOL succeeded, UIImage *image) {
         if (succeeded) {
-          setWallpaper(image);
+
+          setWallpaper(image, paperMode);
         }
       }];
       
@@ -134,9 +142,6 @@ static void reloadType(PLWallpaperMode mode) {
     }
   }];
 
-
-
-  // PLStaticWallpaperImageViewController *controller = [[PLStaticWallpaperImageViewController alloc] initWithUIImage:]
 }
 
 
@@ -145,9 +150,20 @@ static void reloadType(PLWallpaperMode mode) {
 %hook SBLockScreenManager
 - (void)_finishUIUnlockFromSource:(int)source withOptions:(id)options {
   %orig;
-  NSLog(@"[INSTAPAPER] DEVICE UNLOCKED!!!");
-  if (enabled) {
-    reloadFeed();
+
+  if (enabled && homeEnabled) {
+    if (lockEnabled) {
+      return reloadType(PLWallpaperModeBoth);
+    }
+    reloadType(PLWallpaperModeHomeScreen);
+  }
+}
+
+- (void)lockUIFromSource:(int)source withOptions:(id)options {
+  %orig;
+
+  if (enabled && lockEnabled) {
+    reloadType(PLWallpaperModeLockScreen);
   }
 }
 %end

@@ -4,6 +4,8 @@
 #import <SettingsKit/SKPersonCell.h>
 #import <SettingsKit/SKSharedHelper.h>
 
+#define valuesPath @"/User/Library/Preferences/com.jake0oo0.instapaper.plist"
+
 @interface DeveloperCell : SKPersonCell
 @end
 
@@ -66,7 +68,7 @@
          @"cell": @"PSSwitchCell",
          @"default": @YES,
          @"defaults": @"com.jake0oo0.instapaperprefs",
-         @"key": @"lockscreen_enabled",
+         @"key": @"lock_enabled",
          @"label": @"Enabled",
          @"PostNotification": @"com.jake0oo0.instapaper/prefsChange",
          @"cellClass": @"SKTintedSwitchCell"
@@ -75,7 +77,7 @@
       @"cell": @"PSEditTextCell",
       @"default": @"",
       @"defaults": @"com.jake0oo0.instapaperprefs",
-      @"key": @"lockscren_feed",
+      @"key": @"lock_username",
       @"label": @"Feed Username",
       @"PostNotification": @"com.jake0oo0.instapaper/prefsChange"
   },
@@ -88,7 +90,7 @@
      @"cell": @"PSSwitchCell",
      @"default": @YES,
      @"defaults": @"com.jake0oo0.instapaperprefs",
-     @"key": @"homescreen_enabled",
+     @"key": @"home_enabled",
      @"label": @"Enabled",
      @"PostNotification": @"com.jake0oo0.instapaper/prefsChange",
      @"cellClass": @"SKTintedSwitchCell"
@@ -97,7 +99,7 @@
   @"cell": @"PSEditTextCell",
   @"default": @"",
   @"defaults": @"com.jake0oo0.instapaperprefs",
-  @"key": @"homescreen_feed",
+  @"key": @"home_username",
   @"label": @"Feed Username",
   @"PostNotification": @"com.jake0oo0.instapaper/prefsChange"
 },
@@ -113,6 +115,25 @@
 }
 ];
 }
+
+// http://iphonedevwiki.net/index.php/PreferenceBundles
+-(id) readPreferenceValue:(PSSpecifier *)specifier {
+  NSDictionary *settings = [NSDictionary dictionaryWithContentsOfFile:valuesPath];
+  if (!settings[specifier.properties[@"key"]]) {
+    return specifier.properties[@"default"];
+  }
+  return settings[specifier.properties[@"key"]];
+}
+ 
+-(void) setPreferenceValue:(id)value specifier:(PSSpecifier *)specifier {
+  NSMutableDictionary *defaults = [NSMutableDictionary dictionary];
+  [defaults addEntriesFromDictionary:[NSDictionary dictionaryWithContentsOfFile:valuesPath]];
+  [defaults setObject:value forKey:specifier.properties[@"key"]];
+  [defaults writeToFile:valuesPath atomically:NO];
+  CFStringRef toPost = (__bridge CFStringRef)specifier.properties[@"PostNotification"];
+  if (toPost) CFNotificationCenterPostNotification(CFNotificationCenterGetDarwinNotifyCenter(), toPost, NULL, NULL, YES);
+}
+// end
 @end
 
 

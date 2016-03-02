@@ -1,0 +1,6 @@
+.theos/
+_/
+debs/
+obj/
+theos/
+*.log

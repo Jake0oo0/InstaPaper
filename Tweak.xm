@@ -12,7 +12,7 @@ static BOOL homeEnabled = YES;
 static BOOL enabled = YES;
 static BOOL randomPictures = YES;
 static BOOL resizePictures = YES;
-static int activationInterval = 60;
+static int activationInterval = 5;
 
 static NSDate *lastActivationTime = nil;
 
@@ -30,6 +30,8 @@ static NSDictionary* loadPrefs() {
 
       randomPictures = [prefs objectForKey:@"random_pictures"] ? [[prefs objectForKey:@"random_pictures"] boolValue] : YES;
       resizePictures = [prefs objectForKey:@"resize_pictures"] ? [[prefs objectForKey:@"resize_pictures"] boolValue] : YES;
+
+      activationInterval = [prefs objectForKey:@"random_pictures"] ? [[prefs objectForKey:@"random_pictures"] intValue] : 5;
 
       return prefs;
     }
@@ -195,16 +197,20 @@ static void reloadType(PLWallpaperMode paperMode) {
   %orig;
 
 
-  if (enabled && lockEnabled) {
+  if (enabled) {
     if (!lastActivationTime) {
       lastActivationTime = [NSDate date];
       return;
     }
-    if (lastActivationTime && [[NSDate date] timeIntervalSinceDate:lastActivationTime] < (activationInterval * 60)) return;
-    if (homeEnabled) {
-      return reloadType(PLWallpaperModeBoth);
+    if (!lastActivationTime || [[NSDate date] timeIntervalSinceDate:lastActivationTime] < (activationInterval * 60)) return;
+    lastActivationTime = [NSDate date];
+    if (homeEnabled && lockEnabled) {
+      reloadType(PLWallpaperModeBoth);
+    } else if (homeEnabled) {
+      reloadType(PLWallpaperModeHomeScreen);
+    } else if (lockEnabled) {
+      reloadType(PLWallpaperModeLockScreen);
     }
-    reloadType(PLWallpaperModeHomeScreen);
   }
 }
 

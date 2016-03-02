@@ -11,8 +11,9 @@ typedef NS_ENUM(NSUInteger, PLWallpaperMode) {
 @interface PLWallpaperImageViewController : NSObject {
   int _wallpaperMode;
 }
-- (void)_savePhoto;
 @property (nonatomic) BOOL saveWallpaperData;
+
+- (void)_savePhoto;
 @end
 
 @interface PLStaticWallpaperImageViewController : PLWallpaperImageViewController

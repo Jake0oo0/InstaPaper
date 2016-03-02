@@ -112,7 +112,56 @@
   @"cellClass": @"SKTintedCell",
   @"detail": @"DevelopersListCell",
   @"label": @"Developers"
-}
+},
+@{
+     @"cell": @"PSGroupCell",
+     @"label": @"Pictures"
+ },
+  @{
+     @"cell": @"PSSwitchCell",
+     @"default": @YES,
+     @"defaults": @"com.jake0oo0.instapaperprefs",
+     @"key": @"random_pictures",
+     @"label": @"Random Pictures",
+     @"PostNotification": @"com.jake0oo0.instapaper/prefsChange",
+     @"cellClass": @"SKTintedSwitchCell"
+ },
+ @{
+     @"cell": @"PSSwitchCell",
+     @"default": @YES,
+     @"defaults": @"com.jake0oo0.instapaperprefs",
+     @"key": @"resize_pictures",
+     @"label": @"Resize Pictures (experimental)",
+     @"PostNotification": @"com.jake0oo0.instapaper/prefsChange",
+     @"cellClass": @"SKTintedSwitchCell"
+ },
+ @{
+      @"cell": @"PSLinkListCell",
+      @"default": @5,
+      @"defaults": @"com.jake0oo0.instapaperprefs",
+      @"key": @"activation_interval",
+      @"label": @"Activate Every...",
+      @"PostNotification": @"com.jake0oo0.instapaper/prefsChange",
+      @"validTitles": @[
+        @"5 Minutes",
+        @"10 Minutes",
+        @"Half Hour",
+        @"Hour",
+        @"90 Minutes",
+        @"Two Hours",
+        @"3 Hours"
+      ],
+      @"validValues": @[
+        @5,
+        @10,
+        @30,
+        @60,
+        @90,
+        @120,
+        @180
+      ],
+      @"detail": @"PSListItemsController"
+    },
 ];
 }
 

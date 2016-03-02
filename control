@@ -1,9 +1,0 @@
-Package: com.jake0oo0.instapaper
-Name: InstaPaper
-Depends: mobilesubstrate
-Version: 0.0.1
-Architecture: iphoneos-arm
-Description: An awesome MobileSubstrate tweak!
-Maintainer: Jake0oo0 <jake0oo0dev@gmail.com>
-Author: Jake0oo0 <jake0oo0dev@gmail.com>
-Section: Tweaks

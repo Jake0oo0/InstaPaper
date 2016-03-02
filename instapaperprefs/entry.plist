@@ -3,7 +3,7 @@
 		bundle = InstaPaperPrefs;
 		cell = PSLinkCell;
 		detail = InstaPaperPrefsListController;
-		icon = InstaPaperPrefs.png;
+		icon = InstaPaper.png;
 		isController = 1;
 		label = InstaPaper;
     };

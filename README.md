@@ -13,6 +13,8 @@ Each picture is set while you are unable to see the new picture, making wallpape
 * Enable or disable for the lockscreen and homescreen separately
 * Set different feeds for both the lockscreen and homescreen
 
+Only supports public profiles. This should allow you to use most profiles that would include any pictures worthy of being your wallpaper.
+
 Not affiliated with Instagram or Facebook. Compatible with iOS 9. Instagram not required.
 
 ## Changelog

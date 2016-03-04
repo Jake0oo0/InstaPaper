@@ -2,6 +2,9 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 #import "lib/TFHpple.h"
+#import <libactivator/libactivator.h>
+#import "InstaPaperChangerListener.h"
+#import "ProgressHUD.h"
 
 static NSString *prefsLoc = @"/User/Library/Preferences/com.jake0oo0.papergram.plist";
 
@@ -14,9 +17,13 @@ static BOOL randomPictures = YES;
 static BOOL resizePictures = YES;
 static int activationInterval = 5;
 
+static BOOL triggeredByActivator = NO;
+
+
 static NSDate *lastActivationTime = nil;
 
 static NSDictionary* loadPrefs() {
+	HBLogDebug(@"Loading preferences...");
   BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath:prefsLoc];
 
   if (exists) {
@@ -43,6 +50,9 @@ static NSDictionary* loadPrefs() {
 @interface PaperGramHelper : NSObject
 + (void)downloadImageWithURL:(NSURL *)url completionBlock:(void (^)(BOOL succeeded, UIImage *image))completionBlock;
 + (UIImage *)imageWithImage:(UIImage *)image convertToSize:(CGSize)size;
++ (CGPoint) lowerLeftOf:(UIImage *)image;
++ (CGSize) screenSize;
++ (UIImage*) drawCaption:(NSString*)text inImage:(UIImage*)image;
 @end
 
 @implementation PaperGramHelper
@@ -62,23 +72,91 @@ static NSDictionary* loadPrefs() {
 + (UIImage *)imageWithImage:(UIImage *)image convertToSize:(CGSize)size {
   UIGraphicsBeginImageContext(size);
   [image drawInRect:CGRectMake(0, 0, size.width, size.height)];
-  UIImage *destImage = UIGraphicsGetImageFromCurrentImageContext();    
+  UIImage *destImage = UIGraphicsGetImageFromCurrentImageContext();
   UIGraphicsEndImageContext();
   return destImage;
+}
++(CGSize) screenSize {
+	CGRect screenBounds = [[UIScreen mainScreen] bounds];
+	CGFloat screenScale = [[UIScreen mainScreen] scale];
+	CGSize screenSize = CGSizeMake(screenBounds.size.width * screenScale, screenBounds.size.height * screenScale);
+	HBLogDebug(@"screenSize = %f,%f",screenSize.width, screenSize.height);
+	return screenSize;
+}
++(CGPoint) lowerLeftOf:(UIImage *)image {
+	CGSize screenSize = [self screenSize];
+	CGPoint lowerLeft = CGPointMake(0,0);
+
+	if (image.size.width > screenSize.width) {
+		lowerLeft.x = image.size.width/2-screenSize.width/2;
+	} else {
+		lowerLeft.x = 0;
+	}
+
+	if (image.size.height > screenSize.height) {
+		lowerLeft.y = image.size.height-(image.size.height-screenSize.height)/2;
+	} else {
+		lowerLeft.y = image.size.height;
+	}
+	HBLogDebug(@"lowerLeft = %f,%f", lowerLeft.x, lowerLeft.y)
+	return lowerLeft;
+
+}
+
++(UIImage*) drawCaption:(NSString*)text inImage:(UIImage*)image
+{
+		HBLogDebug(@"imagesize = %f,%f", image.size.width, image.size.height);
+		CGSize screenSize = [self screenSize];
+
+		UIFont *font = [UIFont boldSystemFontOfSize:12];
+		NSMutableParagraphStyle *style = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
+		style.alignment = NSTextAlignmentCenter;
+
+		NSShadow *shadow = [[NSShadow alloc] init];
+    shadow.shadowColor = [UIColor colorWithRed:((float)255) green:((float) 255) blue:((float) 0/255) alpha:0.7f];
+    shadow.shadowBlurRadius = 5;
+		//shadow.shadowOpacity = 0.3;
+    shadow.shadowOffset = CGSizeMake(0.0, 0.0);
+
+		//NSDictionary *attribute =	[NSDictionary dictionaryWithObjectsAndKeys:font, NSFontAttributeName, nil];
+		//UIColor* fontColor = [UIColor colorWithRed:((float)152/255) green:((float) 193/255) blue:((float) 193/255) alpha:1.0f];
+		//UIColor* fontColor = [UIColor colorWithRed:0.20 green:0.59 blue:0.37 alpha:1.0];
+		UIColor* fontColor = [UIColor blackColor];
+
+		NSDictionary *attribute = @{ NSFontAttributeName: font,
+									NSParagraphStyleAttributeName:style,
+									NSShadowAttributeName:shadow,
+									NSForegroundColorAttributeName:fontColor};
+
+    UIGraphicsBeginImageContext(image.size);
+
+    [image drawInRect:CGRectMake(0,0,image.size.width,image.size.height)];
+    //CGRect rect = CGRectMake(point.x, point.y, image.size.width, image.size.height);
+
+		CGPoint lowerLeft = [self lowerLeftOf:image];
+
+		//CGRect rect = CGRectMake(point.x, point.y, screenSize.width, screenSize.height);
+		//CGRect rect = CGRectMake(lowerLeft.x, lowerLeft.y-(font.lineHeight*2), screenSize.width, screenSize.height);
+		CGRect rect = CGRectMake(
+				lowerLeft.x,
+				lowerLeft.y-(font.lineHeight*1.5),
+				(screenSize.width>image.size.width ? image.size.width : screenSize.width),
+				(font.lineHeight*1.5)
+		);
+    [[UIColor whiteColor] set];
+    [text drawInRect:CGRectIntegral(rect) withAttributes:attribute];
+    UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+
+    return newImage;
 }
 @end
 
 static void setWallpaper(UIImage *image, PLWallpaperMode mode) {
-  if (resizePictures) {
-    CGRect screenBounds = [[UIScreen mainScreen] bounds];
-    CGFloat screenScale = [[UIScreen mainScreen] scale];
-    CGSize screenSize = CGSizeMake(screenBounds.size.width * screenScale, screenBounds.size.height * screenScale);
-    image = [PaperGramHelper imageWithImage:image convertToSize:screenSize];
-  }
   PLStaticWallpaperImageViewController *controller = [[%c(PLStaticWallpaperImageViewController) alloc] initWithUIImage:image];
 
   controller.saveWallpaperData = YES;
-  
+
   MSHookIvar<PLWallpaperMode>(controller, "_wallpaperMode") = mode;
 
   [controller _savePhoto];
@@ -100,6 +178,14 @@ static void reloadType(PLWallpaperMode paperMode) {
   }
 
   if (!feedUsername) return;
+
+	HBLogDebug(@"Feeds = %@", feedUsername);
+
+	/*support multiple accounts, comma separted*/
+	NSArray *array = [feedUsername componentsSeparatedByString:@","];
+	feedUsername = [array objectAtIndex:( arc4random() % [array count] )];
+
+	HBLogDebug(@"Selected feed = %@", feedUsername);
 
   NSString *instaString = [NSString stringWithFormat:@"https://www.instagram.com/%@/", feedUsername];
   NSURL *instaUrl = [NSURL URLWithString:instaString];
@@ -178,17 +264,85 @@ static void reloadType(PLWallpaperMode paperMode) {
     if (!picURL) return;
 
     // NSLog(@"URL %@", picURL);
-
+		HBLogDebug(@"Downloading image...");
     [PaperGramHelper downloadImageWithURL:[NSURL URLWithString:picURL] completionBlock:^(BOOL succeeded, UIImage *image) {
       if (succeeded && image) {
+				HBLogDebug(@"Downloading image...Success.");
+
+				/* Put the resizing here instead */
+				if (resizePictures) {
+					HBLogDebug(@"Resizing...");
+			    CGRect screenBounds = [[UIScreen mainScreen] bounds];
+			    CGFloat screenScale = [[UIScreen mainScreen] scale];
+			    CGSize screenSize = CGSizeMake(screenBounds.size.width * screenScale, screenBounds.size.height * screenScale);
+			    image = [PaperGramHelper imageWithImage:image convertToSize:screenSize];
+			  }
+				/* add the username */
+				HBLogDebug(@"Captioning...");
+				NSString * caption = [NSString stringWithFormat:@"@%@", feedUsername];
+				image = [PaperGramHelper drawCaption:caption inImage:image];
+
+				HBLogDebug(@"Setting wallpaper(s)...");
         setWallpaper(image, paperMode);
-      }
+
+				HBLogDebug(@"Dismissing ProgressHUD");
+				if (triggeredByActivator) [ProgressHUD showSuccess:@"Done"];
+				HBLogDebug(@"Demarking activator flag.");
+				triggeredByActivator = NO;
+				//[ProgressHUD dismiss];
+      } else {
+				HBLogDebug(@"Downloading image...Failed.");
+				HBLogDebug(@"Dismissing ProgressHUD");
+				if (triggeredByActivator) [ProgressHUD showError:@"Failed"];
+				HBLogDebug(@"Demarking activator flag.");
+				triggeredByActivator = NO;
+				//[ProgressHUD dismiss];
+			}
+
+
     }];
 
   }];
 
 }
 
+static void triggerWallpaperChange() {
+	HBLogDebug(@"triggerWallpaperChange called.");
+	if (triggeredByActivator)	HBLogDebug(@"Triggered by activator.");
+
+	if (enabled) {
+
+		int effActivationInterval = activationInterval;
+		if (activationInterval < 1) {
+			HBLogDebug(@"Activation interval is Never.")
+			effActivationInterval = 99999;
+		}
+
+		HBLogDebug(@"effActivationInterval = %d", effActivationInterval);
+
+		if (!lastActivationTime) {
+			lastActivationTime = [NSDate date];
+			if (!triggeredByActivator)	return;
+		}
+		if (!triggeredByActivator) {
+			HBLogDebug(@"Performing lastActivationTime check");
+			// perform lastActivationTime check. otherwise, skip this and change the wallpaper
+			if (!lastActivationTime || [[NSDate date] timeIntervalSinceDate:lastActivationTime] < (effActivationInterval * 60)) return;
+		}
+
+		HBLogDebug(@"Time to change wallpapers.")
+
+		lastActivationTime = [NSDate date];
+		if (homeEnabled && lockEnabled) {
+			reloadType(PLWallpaperModeBoth);
+		} else if (homeEnabled) {
+			reloadType(PLWallpaperModeHomeScreen);
+		} else if (lockEnabled) {
+			reloadType(PLWallpaperModeLockScreen);
+		}
+
+	}
+}
 
 %group sbHooks
 
@@ -196,22 +350,9 @@ static void reloadType(PLWallpaperMode paperMode) {
 - (void)_finishUIUnlockFromSource:(int)source withOptions:(id)options {
   %orig;
 
+	triggerWallpaperChange();
 
-  if (enabled) {
-    if (!lastActivationTime) {
-      lastActivationTime = [NSDate date];
-      return;
-    }
-    if (!lastActivationTime || [[NSDate date] timeIntervalSinceDate:lastActivationTime] < (activationInterval * 60)) return;
-    lastActivationTime = [NSDate date];
-    if (homeEnabled && lockEnabled) {
-      reloadType(PLWallpaperModeBoth);
-    } else if (homeEnabled) {
-      reloadType(PLWallpaperModeHomeScreen);
-    } else if (lockEnabled) {
-      reloadType(PLWallpaperModeLockScreen);
-    }
-  }
+
 }
 
 // - (void)lockUIFromSource:(int)source withOptions:(id)options {
@@ -229,6 +370,48 @@ static void reloadType(PLWallpaperMode paperMode) {
 
 %end
 
+@implementation InstaPaperChangerListener
+
+- (void)activator:(LAActivator *)activator receiveEvent:(LAEvent *)event {
+	HBLogDebug(@"**********************************");
+	HBLogDebug(@"*   Activator Trigger Received   *");
+	HBLogDebug(@"**********************************");
+
+	if (triggeredByActivator) {
+		HBLogDebug(@"Wallpaper change aborted. Still running previous change.");
+		[event setHandled:YES];
+		return;
+	}
+	loadPrefs();
+	HBLogDebug(@"Marking activator flag.");
+	triggeredByActivator = YES;
+
+	HBLogDebug(@"Show progressHUD");
+	[ProgressHUD dismiss];
+	[ProgressHUD show:@"Updating wallpaper..."];
+
+	HBLogDebug(@"Call triggerWallpaperChange");
+	triggerWallpaperChange();
+ 	// Activate your plugin
+ 	[event setHandled:YES]; // To prevent the default OS implementation
+}
+
+- (void)activator:(LAActivator *)activator abortEvent:(LAEvent *)event {
+	// Dismiss your plugin
+}
+
++ (void)load {
+	if ([[[NSBundle mainBundle] bundleIdentifier] isEqualToString:@"com.apple.springboard"])
+  	[[%c(LAActivator) sharedInstance] registerListener:[self new] forName:@"com.supermamon.instapaperchanger"];
+	/*
+	if ([LASharedActivator isRunningInsideSpringBoard]) {
+		[LASharedActivator registerListener:[self new] forName:@"com.supermamon.instapaperchanger"];
+	}
+	*/
+}
+
+@end
+
 static void handlePrefsChange(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
   loadPrefs();
 }
@@ -239,11 +422,11 @@ static void handlePrefsChange(CFNotificationCenterRef center, void *observer, CF
     loadPrefs();
 
     CFNotificationCenterAddObserver(
-      CFNotificationCenterGetDarwinNotifyCenter(), 
+      CFNotificationCenterGetDarwinNotifyCenter(),
       NULL,
       &handlePrefsChange,
       (CFStringRef)@"com.jake0oo0.PaperGram/prefsChange",
-      NULL, 
+      NULL,
       CFNotificationSuspensionBehaviorCoalesce);
 
     %init(sbHooks);

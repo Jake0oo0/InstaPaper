@@ -1,0 +1,6 @@
+{
+    group = "";
+    title = "PaperGram";
+    description = "Trigger the PaperGram wallpaper change.";
+    "compatible-modes" = ("springboard", "lockscreen", "application");
+}

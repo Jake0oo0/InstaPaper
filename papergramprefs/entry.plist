@@ -1,0 +1,10 @@
+{
+    entry = {
+		bundle = PaperGramPrefs;
+		cell = PSLinkCell;
+		detail = PaperGramPrefsListController;
+		icon = PaperGram.png;
+		isController = 1;
+		label = PaperGram;
+    };
+}

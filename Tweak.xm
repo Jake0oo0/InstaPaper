@@ -3,7 +3,7 @@
 #import <UIKit/UIKit.h>
 #import "lib/TFHpple.h"
 
-static NSString *prefsLoc = @"/User/Library/Preferences/com.jake0oo0.instapaper.plist";
+static NSString *prefsLoc = @"/User/Library/Preferences/com.jake0oo0.papergram.plist";
 
 static NSString *lockUsername = nil;
 static BOOL lockEnabled = YES;
@@ -40,12 +40,12 @@ static NSDictionary* loadPrefs() {
   return nil;
 }
 
-@interface InstaPaperHelper : NSObject
+@interface PaperGramHelper : NSObject
 + (void)downloadImageWithURL:(NSURL *)url completionBlock:(void (^)(BOOL succeeded, UIImage *image))completionBlock;
 + (UIImage *)imageWithImage:(UIImage *)image convertToSize:(CGSize)size;
 @end
 
-@implementation InstaPaperHelper
+@implementation PaperGramHelper
 + (void)downloadImageWithURL:(NSURL *)url completionBlock:(void (^)(BOOL succeeded, UIImage *image))completionBlock {
   NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
   [NSURLConnection sendAsynchronousRequest:request
@@ -73,7 +73,7 @@ static void setWallpaper(UIImage *image, PLWallpaperMode mode) {
     CGRect screenBounds = [[UIScreen mainScreen] bounds];
     CGFloat screenScale = [[UIScreen mainScreen] scale];
     CGSize screenSize = CGSizeMake(screenBounds.size.width * screenScale, screenBounds.size.height * screenScale);
-    image = [InstaPaperHelper imageWithImage:image convertToSize:screenSize];
+    image = [PaperGramHelper imageWithImage:image convertToSize:screenSize];
   }
   PLStaticWallpaperImageViewController *controller = [[%c(PLStaticWallpaperImageViewController) alloc] initWithUIImage:image];
 
@@ -179,7 +179,7 @@ static void reloadType(PLWallpaperMode paperMode) {
 
     // NSLog(@"URL %@", picURL);
 
-    [InstaPaperHelper downloadImageWithURL:[NSURL URLWithString:picURL] completionBlock:^(BOOL succeeded, UIImage *image) {
+    [PaperGramHelper downloadImageWithURL:[NSURL URLWithString:picURL] completionBlock:^(BOOL succeeded, UIImage *image) {
       if (succeeded && image) {
         setWallpaper(image, paperMode);
       }
@@ -242,7 +242,7 @@ static void handlePrefsChange(CFNotificationCenterRef center, void *observer, CF
       CFNotificationCenterGetDarwinNotifyCenter(), 
       NULL,
       &handlePrefsChange,
-      (CFStringRef)@"com.jake0oo0.instapaper/prefsChange",
+      (CFStringRef)@"com.jake0oo0.PaperGram/prefsChange",
       NULL, 
       CFNotificationSuspensionBehaviorCoalesce);
 

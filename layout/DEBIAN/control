@@ -1,9 +1,10 @@
-Package: com.jake0oo0.instapaper
-Name: InstaPaper
+Package: com.jake0oo0.papergram
+Name: PaperGram
 Depends: mobilesubstrate
-Version: 0.0.1
+Version: 1.0.0
 Architecture: iphoneos-arm
 Description: Set your iOS wallpaper with pictures from Instagram feeds
 Maintainer: Jake0oo0 <jake0oo0dev@gmail.com>
-Author: Jake0oo0 <jake0oo0dev@gmail.com>
+Author: Jake0oo0 & AOkhtenberg <jake0oo0dev@gmail.com>
 Section: Tweaks
+Icon: /Library/PreferenceBundles/PaperGramPrefs.bundle/PaperGram@3x.png

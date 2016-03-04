@@ -6,17 +6,17 @@ ADDITIONAL_OBJCFLAGS = -fobjc-arc
 
 include theos/makefiles/common.mk
 
-TWEAK_NAME = InstaPaper
-InstaPaper_FILES = Tweak.xm $(wildcard lib/*.m)
-InstaPaper_LDFLAGS = -lxml2
-InstaPaper_CFLAGS=-I$(SYSROOT)/usr/include/libxml2
-InstaPaper_LDFLAGS += -Wl,-segalign,4000
-InstaPaper_FRAMEWORKS = UIKit Foundation CoreGraphics ImageIO Accelerate QuartzCore
+TWEAK_NAME = PaperGram
+PaperGram_FILES = Tweak.xm $(wildcard lib/*.m)
+PaperGram_LDFLAGS = -lxml2
+PaperGram_CFLAGS=-I$(SYSROOT)/usr/include/libxml2
+PaperGram_LDFLAGS += -Wl,-segalign,4000
+PaperGram_FRAMEWORKS = UIKit Foundation CoreGraphics ImageIO Accelerate QuartzCore
 
 include $(THEOS_MAKE_PATH)/tweak.mk
 include theos/makefiles/bundle.mk
 
 after-install::
 	install.exec "killall -9 SpringBoard"
-SUBPROJECTS += instapaperprefs
+SUBPROJECTS += papergramprefs
 include $(THEOS_MAKE_PATH)/aggregate.mk

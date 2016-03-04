@@ -4,7 +4,7 @@
 #import <SettingsKit/SKPersonCell.h>
 #import <SettingsKit/SKSharedHelper.h>
 
-#define valuesPath @"/User/Library/Preferences/com.jake0oo0.instapaper.plist"
+#define valuesPath @"/User/Library/Preferences/com.jake0oo0.papergram.plist"
 
 @interface DeveloperCell : SKPersonCell
 @end
@@ -16,10 +16,10 @@
 @end
 
 
-@interface InstaPaperPrefsListController: SKTintedListController<SKListControllerProtocol>
+@interface PaperGramPrefsListController: SKTintedListController<SKListControllerProtocol>
 @end
 
-@implementation InstaPaperPrefsListController
+@implementation PaperGramPrefsListController
 
 
 - (UIColor*) tintColor { return [UIColor colorWithRed:0.071 green:0.337 blue:0.533 alpha:1]; }
@@ -28,11 +28,11 @@
 }
 
 -(NSString *)shareMessage {
-    return @"I'm using #InstaPaper by @itsjake88 to set my iOS background to Instagram pics. Check it out!";
+    return @"I'm using #PaperGram by @itsjake88 to set my iOS background to Instagram pics. Check it out!";
 }
 
 -(NSString *)headerText { 
-  return @"InstaPaper"; 
+  return @"PaperGram"; 
 }
 
 -(NSString *)headerSubText {
@@ -40,7 +40,7 @@
 }
 
 -(NSString *)customTitle { 
-  return @"InstaPaper"; 
+  return @"PaperGram"; 
 }
 
 -(NSArray*) customSpecifiers
@@ -48,15 +48,15 @@
     return @[
      @{
          @"cell": @"PSGroupCell",
-         @"label": @"InstaPaper Settings"
+         @"label": @"PaperGram Settings"
      },
      @{
          @"cell": @"PSSwitchCell",
          @"default": @YES,
-         @"defaults": @"com.jake0oo0.instapaperprefs",
+         @"defaults": @"com.jake0oo0.papergramprefs",
          @"key": @"enabled",
          @"label": @"Enabled",
-         @"PostNotification": @"com.jake0oo0.instapaper/prefsChange",
+         @"PostNotification": @"com.jake0oo0.papergram/prefsChange",
          @"cellClass": @"SKTintedSwitchCell"
      },
 
@@ -67,19 +67,19 @@
      @{
          @"cell": @"PSSwitchCell",
          @"default": @YES,
-         @"defaults": @"com.jake0oo0.instapaperprefs",
+         @"defaults": @"com.jake0oo0.papergramprefs",
          @"key": @"lock_enabled",
          @"label": @"Enabled",
-         @"PostNotification": @"com.jake0oo0.instapaper/prefsChange",
+         @"PostNotification": @"com.jake0oo0.papergram/prefsChange",
          @"cellClass": @"SKTintedSwitchCell"
      },
      @{
       @"cell": @"PSEditTextCell",
       @"default": @"",
-      @"defaults": @"com.jake0oo0.instapaperprefs",
+      @"defaults": @"com.jake0oo0.papergramprefs",
       @"key": @"lock_username",
       @"label": @"Feed Username",
-      @"PostNotification": @"com.jake0oo0.instapaper/prefsChange"
+      @"PostNotification": @"com.jake0oo0.papergram/prefsChange"
   },
 
   @{
@@ -89,19 +89,19 @@
  @{
      @"cell": @"PSSwitchCell",
      @"default": @YES,
-     @"defaults": @"com.jake0oo0.instapaperprefs",
+     @"defaults": @"com.jake0oo0.papergramprefs",
      @"key": @"home_enabled",
      @"label": @"Enabled",
-     @"PostNotification": @"com.jake0oo0.instapaper/prefsChange",
+     @"PostNotification": @"com.jake0oo0.papergram/prefsChange",
      @"cellClass": @"SKTintedSwitchCell"
  },
  @{
   @"cell": @"PSEditTextCell",
   @"default": @"",
-  @"defaults": @"com.jake0oo0.instapaperprefs",
+  @"defaults": @"com.jake0oo0.papergramprefs",
   @"key": @"home_username",
   @"label": @"Feed Username",
-  @"PostNotification": @"com.jake0oo0.instapaper/prefsChange"
+  @"PostNotification": @"com.jake0oo0.papergram/prefsChange"
 },
 @{
   @"cell": @"PSGroupCell",
@@ -120,28 +120,28 @@
   @{
      @"cell": @"PSSwitchCell",
      @"default": @YES,
-     @"defaults": @"com.jake0oo0.instapaperprefs",
+     @"defaults": @"com.jake0oo0.papergramprefs",
      @"key": @"random_pictures",
      @"label": @"Random Pictures",
-     @"PostNotification": @"com.jake0oo0.instapaper/prefsChange",
+     @"PostNotification": @"com.jake0oo0.papergram/prefsChange",
      @"cellClass": @"SKTintedSwitchCell"
  },
  @{
      @"cell": @"PSSwitchCell",
      @"default": @YES,
-     @"defaults": @"com.jake0oo0.instapaperprefs",
+     @"defaults": @"com.jake0oo0.papergramprefs",
      @"key": @"resize_pictures",
      @"label": @"Resize Pictures (experimental)",
-     @"PostNotification": @"com.jake0oo0.instapaper/prefsChange",
+     @"PostNotification": @"com.jake0oo0.papergram/prefsChange",
      @"cellClass": @"SKTintedSwitchCell"
  },
  @{
       @"cell": @"PSLinkListCell",
       @"default": @5,
-      @"defaults": @"com.jake0oo0.instapaperprefs",
+      @"defaults": @"com.jake0oo0.papergramprefs",
       @"key": @"activation_interval",
       @"label": @"Activate Every...",
-      @"PostNotification": @"com.jake0oo0.instapaper/prefsChange",
+      @"PostNotification": @"com.jake0oo0.papergram/prefsChange",
       @"validTitles": @[
         @"5 Minutes",
         @"10 Minutes",

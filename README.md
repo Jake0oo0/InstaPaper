@@ -1,4 +1,4 @@
-# InstaPaper
+# PaperGram
 
 Automatically set your iOS background to pictures straight from a user's Instagram feed.
 

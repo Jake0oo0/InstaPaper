@@ -5,6 +5,7 @@
 #import <libactivator/libactivator.h>
 #import "PapeGramHelper.h"
 #import "PaperGramChangerListener.h"
+#import "lib/Reachability.h"
 
 static NSString *prefsLoc = @"/User/Library/Preferences/com.jake0oo0.papergram.plist";
 
@@ -17,6 +18,8 @@ static BOOL enabled = YES;
 static BOOL randomPictures = YES;
 static BOOL resizePictures = YES;
 static int activationInterval = 5;
+static BOOL showProgressHud = NO;
+static BOOL wifiOnly = NO;
 
 static BOOL triggeredByActivator = NO;
 static NSDate *lastActivationTime = nil;
@@ -37,6 +40,8 @@ static NSDictionary* loadPrefs() {
 			embedUsername = [prefs objectForKey:@"embedUsername"] ? [[prefs objectForKey:@"embedUsername"] boolValue] : YES;
       randomPictures = [prefs objectForKey:@"random_pictures"] ? [[prefs objectForKey:@"random_pictures"] boolValue] : YES;
       resizePictures = [prefs objectForKey:@"resize_pictures"] ? [[prefs objectForKey:@"resize_pictures"] boolValue] : YES;
+      showProgressHud = [prefs objectForKey:@"progress_hud"] ? [[prefs objectForKey:@"progress_hud"] boolValue] : NO;
+      wifiOnly = [prefs objectForKey:@"wifi_only"] ? [[prefs objectForKey:@"wifi_only"] boolValue] : NO;
 
       activationInterval = [prefs objectForKey:@"random_pictures"] ? [[prefs objectForKey:@"random_pictures"] intValue] : 5;
 
@@ -60,7 +65,7 @@ static void setWallpaper(UIImage *image, PLWallpaperMode mode) {
 static void reloadType(PLWallpaperMode paperMode) {
   NSString *feedUsername;
   if (paperMode == PLWallpaperModeBoth) {
-    if (![lockUsername isEqualToString:homeUsername]) {
+    if (![lockUsername isEqualToString:homeUsername] || randomPictures) {
       reloadType(PLWallpaperModeHomeScreen);
       reloadType(PLWallpaperModeLockScreen);
       return;
@@ -166,7 +171,7 @@ static void reloadType(PLWallpaperMode paperMode) {
     if (!picURL) return;
 
     // NSLog(@"URL %@", picURL);
-		[progressHUD setMessage:@"Downloading image..."];
+	  [progressHUD setMessage:@"Downloading image..."];
     [PaperGramHelper downloadImageWithURL:[NSURL URLWithString:picURL] completionBlock:^(BOOL succeeded, UIImage *image) {
       if (succeeded && image) {
 				/* Put the resizing here instead */
@@ -211,6 +216,18 @@ static void triggerWallpaperChange() {
 	//if (triggeredByActivator)	HBLogDebug(@"Triggered by activator.");
 
 	if (enabled) {
+
+    if (wifiOnly) {
+      Reachability *reachability = [Reachability reachabilityForInternetConnection];
+      [reachability startNotifier];
+
+      NetworkStatus status = [reachability currentReachabilityStatus];
+
+      if (status != ReachableViaWiFi) {
+        triggeredByActivator = NO;
+        return;
+      }
+    }
 
 		int effActivationInterval = activationInterval;
 		if (activationInterval < 1) {
@@ -274,8 +291,10 @@ static void triggerWallpaperChange() {
 	triggeredByActivator = YES;
 
 	//HBLogDebug(@"Show progressHUD");
-	progressHUD = [[UIAlertView alloc] initWithTitle:@"PaperGram" message:@"Running PaperGram..." delegate:self cancelButtonTitle:nil otherButtonTitles:nil];
-	[progressHUD show];
+  if (showProgressHud) {
+  	progressHUD = [[UIAlertView alloc] initWithTitle:@"PaperGram" message:@"Running PaperGram..." delegate:self cancelButtonTitle:nil otherButtonTitles:nil];
+  	[progressHUD show];
+  }
 
 	//[ProgressHUD dismiss];
 	//[ProgressHUD show:@"Updating wallpaper..."];
@@ -317,8 +336,6 @@ static void handleReloadHome(CFNotificationCenterRef center, void *observer, CFS
 static void handleReloadBoth(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
   reloadType(PLWallpaperModeBoth);
 }
-
-
 
 %ctor {
   @autoreleasepool {

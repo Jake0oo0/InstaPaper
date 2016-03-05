@@ -31,177 +31,204 @@
   return @"I'm using #PaperGram by @itsjake88 to set my iOS background to Instagram pics. Check it out!";
 }
 
--(NSString *)headerText {
+- (NSString*)headerText {
   return @"PaperGram";
 }
 
--(NSString *)headerSubText {
+- (NSString*)headerSubText {
   return @"Instagram Wallpapers";
 }
 
--(NSString *)customTitle {
+- (NSString*)customTitle {
   return @"PaperGram";
 }
 
--(NSArray*) customSpecifiers
-{
+- (NSArray*)customSpecifiers {
   return @[
-   @{
-     @"cell": @"PSGroupCell",
-     @"label": @"PaperGram Settings"
-   },
-   @{
-     @"cell": @"PSSwitchCell",
-     @"default": @YES,
-     @"defaults": @"com.jake0oo0.papergramprefs",
-     @"key": @"enabled",
-     @"label": @"Enabled",
-     @"PostNotification": @"com.jake0oo0.papergram/prefsChange",
-     @"cellClass": @"SKTintedSwitchCell"
-   },
+    @{
+      @"cell": @"PSGroupCell",
+      @"label": @"PaperGram"
+    },
+    @{
+      @"cell": @"PSSwitchCell",
+      @"default": @YES,
+      @"defaults": @"com.jake0oo0.papergramprefs",
+      @"key": @"enabled",
+      @"label": @"Enabled",
+      @"PostNotification": @"com.jake0oo0.papergram/prefsChange",
+      @"cellClass": @"SKTintedSwitchCell"
+    },
+    @{
+      @"cell": @"PSSwitchCell",
+      @"default": @NO,
+      @"defaults": @"com.jake0oo0.papergramprefs",
+      @"key": @"wifi_only",
+      @"label": @"WiFi Only",
+      @"PostNotification": @"com.jake0oo0.papergram/prefsChange",
+      @"cellClass": @"SKTintedSwitchCell"
+    },
+    @{
+      @"cell": @"PSGroupCell",
+      @"label": @"Lockscreen"
+    },
+    @{
+      @"cell": @"PSSwitchCell",
+      @"default": @YES,
+      @"defaults": @"com.jake0oo0.papergramprefs",
+      @"key": @"lock_enabled",
+      @"label": @"Enabled",
+      @"PostNotification": @"com.jake0oo0.papergram/prefsChange",
+      @"cellClass": @"SKTintedSwitchCell"
+    },
+    @{
+      @"cell": @"PSEditTextCell",
+      @"default": @"",
+      @"defaults": @"com.jake0oo0.papergramprefs",
+      @"key": @"lock_username",
+      @"label": @"Feeds",
+      @"PostNotification": @"com.jake0oo0.papergram/prefsChange"
+    },
 
-   @{
-     @"cell": @"PSGroupCell",
-     @"label": @"Lockscreen"
-   },
-   @{
-     @"cell": @"PSSwitchCell",
-     @"default": @YES,
-     @"defaults": @"com.jake0oo0.papergramprefs",
-     @"key": @"lock_enabled",
-     @"label": @"Enabled",
-     @"PostNotification": @"com.jake0oo0.papergram/prefsChange",
-     @"cellClass": @"SKTintedSwitchCell"
-   },
-   @{
-    @"cell": @"PSEditTextCell",
-    @"default": @"",
-    @"defaults": @"com.jake0oo0.papergramprefs",
-    @"key": @"lock_username",
-    @"label": @"Feeds",
-    @"PostNotification": @"com.jake0oo0.papergram/prefsChange"
-  },
-
-  @{
-   @"cell": @"PSGroupCell",
-   @"label": @"Homescreen"
- },
- @{
-   @"cell": @"PSSwitchCell",
-   @"default": @YES,
-   @"defaults": @"com.jake0oo0.papergramprefs",
-   @"key": @"home_enabled",
-   @"label": @"Enabled",
-   @"PostNotification": @"com.jake0oo0.papergram/prefsChange",
-   @"cellClass": @"SKTintedSwitchCell"
- },
- @{
-  @"cell": @"PSEditTextCell",
-  @"default": @"",
-  @"defaults": @"com.jake0oo0.papergramprefs",
-  @"key": @"home_username",
-  @"label": @"Feeds",
-  @"PostNotification": @"com.jake0oo0.papergram/prefsChange"
-},
-@{},
-@{
-  @"cell": @"PSSwitchCell",
-  @"default": @YES,
-  @"defaults": @"com.jake0oo0.papergramprefs",
-  @"key": @"embedUsername",
-  @"label": @"Embed Username",
-  @"PostNotification": @"com.jake0oo0.papergram/prefsChange",
-  @"cellClass": @"SKTintedSwitchCell"
-},
-@{
- @"cell": @"PSGroupCell",
- @"label": @"Pictures"
-},
-@{
- @"cell": @"PSSwitchCell",
- @"default": @YES,
- @"defaults": @"com.jake0oo0.papergramprefs",
- @"key": @"random_pictures",
- @"label": @"Random Pictures",
- @"PostNotification": @"com.jake0oo0.papergram/prefsChange",
- @"cellClass": @"SKTintedSwitchCell"
-},
-@{
- @"cell": @"PSSwitchCell",
- @"default": @YES,
- @"defaults": @"com.jake0oo0.papergramprefs",
- @"key": @"resize_pictures",
- @"label": @"Resize Pictures",
- @"PostNotification": @"com.jake0oo0.papergram/prefsChange",
- @"cellClass": @"SKTintedSwitchCell"
-},
-@{
-  @"cell": @"PSLinkListCell",
-  @"default": @5,
-  @"defaults": @"com.jake0oo0.papergramprefs",
-  @"key": @"activation_interval",
-  @"label": @"Activate Every...",
-  @"PostNotification": @"com.jake0oo0.papergram/prefsChange",
-  @"validTitles": @[
-    @"Never (Use Activator)",
-    @"1 minute",
-    @"5 minutes",
-    @"10 minutes",
-    @"Half-hour",
-    @"Hour",
-    @"90 minutes",
-    @"2 hours",
-    @"3 Hours"
-    ],
-  @"validValues": @[
-    @-1,
-    @1,
-    @5,
-    @10,
-    @30,
-    @60,
-    @90,
-    @120,
-    @180
-    ],
-  @"detail": @"PSListItemsController"
-},
-@{
-  @"cell": @"PSGroupCell",
-  @"label": @"Manual Reload"
-},
-@{
-@"cell": @"PSButtonCell",
-@"action": @"cycleLockscreen:",
-@"label": @"Cycle Lockscreen"
-},
-@{
-@"cell": @"PSButtonCell",
-@"action": @"cycleHomescreen:",
-@"label": @"Cycle Homescreen"
-},
-@{
-@"cell": @"PSButtonCell",
-@"action": @"cycleBoth:",
-@"label": @"Cycle Both"
-},
-@{
-  @"cell": @"PSGroupCell",
-  @"label": @"Developers"
-},
-@{
-  @"cell": @"PSLinkCell",
-  @"cellClass": @"SKTintedCell",
-  @"detail": @"DevelopersListCell",
-  @"label": @"Developers"
-},
-@{
-@"cell": @"PSButtonCell",
-@"action": @"openPaypal:",
-@"label": @"Donate (Paypal)",
-@"icon": @"PayPal.png"
-},
-];
+    @{
+      @"cell": @"PSGroupCell",
+      @"label": @"Homescreen"
+    },
+    @{
+      @"cell": @"PSSwitchCell",
+      @"default": @YES,
+      @"defaults": @"com.jake0oo0.papergramprefs",
+      @"key": @"home_enabled",
+      @"label": @"Enabled",
+      @"PostNotification": @"com.jake0oo0.papergram/prefsChange",
+      @"cellClass": @"SKTintedSwitchCell"
+    },
+    @{
+      @"cell": @"PSEditTextCell",
+      @"default": @"",
+      @"defaults": @"com.jake0oo0.papergramprefs",
+      @"key": @"home_username",
+      @"label": @"Feeds",
+      @"PostNotification": @"com.jake0oo0.papergram/prefsChange"
+    },
+    @{
+      @"cell": @"PSSwitchCell",
+      @"default": @YES,
+      @"defaults": @"com.jake0oo0.papergramprefs",
+      @"key": @"embedUsername",
+      @"label": @"Embed Username",
+      @"PostNotification": @"com.jake0oo0.papergram/prefsChange",
+      @"cellClass": @"SKTintedSwitchCell"
+    },
+    @{
+      @"cell": @"PSGroupCell",
+      @"label": @"Pictures"
+    },
+    @{
+      @"cell": @"PSSwitchCell",
+      @"default": @YES,
+      @"defaults": @"com.jake0oo0.papergramprefs",
+      @"key": @"random_pictures",
+      @"label": @"Random Pictures",
+      @"PostNotification": @"com.jake0oo0.papergram/prefsChange",
+      @"cellClass": @"SKTintedSwitchCell"
+    },
+    @{
+      @"cell": @"PSSwitchCell",
+      @"default": @YES,
+      @"defaults": @"com.jake0oo0.papergramprefs",
+      @"key": @"resize_pictures",
+      @"label": @"Resize Pictures",
+      @"PostNotification": @"com.jake0oo0.papergram/prefsChange",
+      @"cellClass": @"SKTintedSwitchCell"
+    },
+    @{
+      @"cell": @"PSLinkListCell",
+      @"default": @5,
+      @"defaults": @"com.jake0oo0.papergramprefs",
+      @"key": @"activation_interval",
+      @"label": @"Activate Every...",
+      @"PostNotification": @"com.jake0oo0.papergram/prefsChange",
+      @"validTitles": @[
+        @"Never (Use Activator)",
+        @"1 minute",
+        @"5 minutes",
+        @"10 minutes",
+        @"Half-hour",
+        @"Hour",
+        @"90 minutes",
+        @"2 hours",
+        @"3 Hours"
+        ],
+      @"validValues": @[
+        @-1,
+        @1,
+        @5,
+        @10,
+        @30,
+        @60,
+        @90,
+        @120,
+        @180
+        ],
+      @"detail": @"PSListItemsController"
+    },
+    @{
+      @"cell": @"PSGroupCell",
+      @"label": @"Activator"
+    },
+    @{
+      @"cell": @"PSSwitchCell",
+      @"default": @NO,
+      @"defaults": @"com.jake0oo0.papergramprefs",
+      @"key": @"progress_hud",
+      @"label": @"Show Progress HUD",
+      @"PostNotification": @"com.jake0oo0.papergram/prefsChange",
+      @"cellClass": @"SKTintedSwitchCell"
+    },
+    // @{
+    //   @"cell": @"PSLinkCell",
+    //   @"label": @"Activation Methods",
+    //   @"isController": @true,
+    //   @"bundle": @"LibActivator",
+    //   @"activatorListener": @"com.jake0oo0.papergramchanger",
+    //   @"activatorTitle": @"PaperGram"
+    // },
+    @{
+      @"cell": @"PSGroupCell",
+      @"label": @"Manual Reload"
+    },
+    @{
+      @"cell": @"PSButtonCell",
+      @"action": @"cycleLockscreen:",
+      @"label": @"Cycle Lockscreen"
+    },
+    @{
+      @"cell": @"PSButtonCell",
+      @"action": @"cycleHomescreen:",
+      @"label": @"Cycle Homescreen"
+    },
+    @{
+      @"cell": @"PSButtonCell",
+      @"action": @"cycleBoth:",
+      @"label": @"Cycle Both"
+    },
+    @{
+      @"cell": @"PSGroupCell",
+      @"label": @"Developers"
+    },
+    @{
+      @"cell": @"PSLinkCell",
+      @"cellClass": @"SKTintedCell",
+      @"detail": @"DevelopersListCell",
+      @"label": @"Developers"
+    },
+    @{
+      @"cell": @"PSButtonCell",
+      @"action": @"openPaypal:",
+      @"label": @"Donate (PayPal)",
+      @"icon": @"PayPal.png"
+    },
+  ];
 }
 
 - (void)openPayPal:(id)sender {
@@ -213,7 +240,7 @@
 }
 
 - (void)cycleHomescreen:(id)sender {
-CFNotificationCenterPostNotification(CFNotificationCenterGetDarwinNotifyCenter(), CFSTR("com.jake0oo0.papergram/cycleHome"), NULL, NULL, TRUE);
+  CFNotificationCenterPostNotification(CFNotificationCenterGetDarwinNotifyCenter(), CFSTR("com.jake0oo0.papergram/cycleHome"), NULL, NULL, TRUE);
 }
 
 - (void)cycleBoth:(id)sender {
@@ -221,7 +248,7 @@ CFNotificationCenterPostNotification(CFNotificationCenterGetDarwinNotifyCenter()
 }
 
 // http://iphonedevwiki.net/index.php/PreferenceBundles
--(id) readPreferenceValue:(PSSpecifier *)specifier {
+-(id)readPreferenceValue:(PSSpecifier *)specifier {
   NSDictionary *settings = [NSDictionary dictionaryWithContentsOfFile:valuesPath];
   if (!settings[specifier.properties[@"key"]]) {
     return specifier.properties[@"default"];
@@ -229,7 +256,7 @@ CFNotificationCenterPostNotification(CFNotificationCenterGetDarwinNotifyCenter()
   return settings[specifier.properties[@"key"]];
 }
 
--(void) setPreferenceValue:(id)value specifier:(PSSpecifier *)specifier {
+-(void)setPreferenceValue:(id)value specifier:(PSSpecifier *)specifier {
   NSMutableDictionary *defaults = [NSMutableDictionary dictionary];
   [defaults addEntriesFromDictionary:[NSDictionary dictionaryWithContentsOfFile:valuesPath]];
   [defaults setObject:value forKey:specifier.properties[@"key"]];
@@ -242,33 +269,33 @@ CFNotificationCenterPostNotification(CFNotificationCenterGetDarwinNotifyCenter()
 
 
 @implementation DeveloperCell
--(NSString *)personDescription { return @"Lead Developer"; }
--(NSString *)name { return @"Jake0oo0"; }
--(NSString *)twitterHandle { return @"itsjake88"; }
--(NSString *)imageName { return @"Jake@2x.png"; }
+- (NSString *)personDescription { return @"Lead Developer"; }
+- (NSString *)name { return @"Jake0oo0"; }
+- (NSString *)twitterHandle { return @"itsjake88"; }
+- (NSString *)imageName { return @"Jake@2x.png"; }
 @end
 
 @implementation DesignerCell
--(NSString *)personDescription { return @"Lead Designer"; }
--(NSString *)name { return @"AOkhtenberg"; }
--(NSString *)twitterHandle { return @"AOkhtenberg"; }
--(NSString *)imageName { return @"AOkhtenberg@2x.png"; }
+- (NSString *)personDescription { return @"Lead Designer"; }
+- (NSString *)name { return @"AOkhtenberg"; }
+- (NSString *)twitterHandle { return @"AOkhtenberg"; }
+- (NSString *)imageName { return @"AOkhtenberg@2x.png"; }
 @end
 
 @implementation DevelopersListCell
--(BOOL)showHeartImage {
+- (BOOL)showHeartImage {
   return NO;
 }
 
--(void)openJakeTwitter {
+- (void)openJakeTwitter {
   [SKSharedHelper openTwitter:@"itsjake88"];
 }
 
--(void)openAOkTwitter {
+- (void)openAOkTwitter {
   [SKSharedHelper openTwitter:@"AOkhtenberg"];
 }
 
--(NSArray *)customSpecifiers {
+- (NSArray *)customSpecifiers {
   return @[
     @{
       @"cell": @"PSLinkCell",

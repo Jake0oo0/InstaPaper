@@ -28,7 +28,7 @@
 }
 
 -(NSString *)shareMessage {
-    return @"I'm using #PaperGram by @itsjake88 to set my iOS background to Instagram pics. Check it out!";
+  return @"I'm using #PaperGram by @itsjake88 to set my iOS background to Instagram pics. Check it out!";
 }
 
 -(NSString *)headerText {
@@ -45,55 +45,55 @@
 
 -(NSArray*) customSpecifiers
 {
-    return @[
-     @{
-         @"cell": @"PSGroupCell",
-         @"label": @"PaperGram Settings"
-     },
-     @{
-         @"cell": @"PSSwitchCell",
-         @"default": @YES,
-         @"defaults": @"com.jake0oo0.papergramprefs",
-         @"key": @"enabled",
-         @"label": @"Enabled",
-         @"PostNotification": @"com.jake0oo0.papergram/prefsChange",
-         @"cellClass": @"SKTintedSwitchCell"
-     },
-
-     @{
-         @"cell": @"PSGroupCell",
-         @"label": @"Lockscreen"
-     },
-     @{
-         @"cell": @"PSSwitchCell",
-         @"default": @YES,
-         @"defaults": @"com.jake0oo0.papergramprefs",
-         @"key": @"lock_enabled",
-         @"label": @"Enabled",
-         @"PostNotification": @"com.jake0oo0.papergram/prefsChange",
-         @"cellClass": @"SKTintedSwitchCell"
-     },
-     @{
-      @"cell": @"PSEditTextCell",
-      @"default": @"",
-      @"defaults": @"com.jake0oo0.papergramprefs",
-      @"key": @"lock_username",
-      @"label": @"Feeds",
-      @"PostNotification": @"com.jake0oo0.papergram/prefsChange"
-  },
-
-  @{
+  return @[
+   @{
      @"cell": @"PSGroupCell",
-     @"label": @"Homescreen"
- },
- @{
+     @"label": @"PaperGram Settings"
+   },
+   @{
      @"cell": @"PSSwitchCell",
      @"default": @YES,
      @"defaults": @"com.jake0oo0.papergramprefs",
-     @"key": @"home_enabled",
+     @"key": @"enabled",
      @"label": @"Enabled",
      @"PostNotification": @"com.jake0oo0.papergram/prefsChange",
      @"cellClass": @"SKTintedSwitchCell"
+   },
+
+   @{
+     @"cell": @"PSGroupCell",
+     @"label": @"Lockscreen"
+   },
+   @{
+     @"cell": @"PSSwitchCell",
+     @"default": @YES,
+     @"defaults": @"com.jake0oo0.papergramprefs",
+     @"key": @"lock_enabled",
+     @"label": @"Enabled",
+     @"PostNotification": @"com.jake0oo0.papergram/prefsChange",
+     @"cellClass": @"SKTintedSwitchCell"
+   },
+   @{
+    @"cell": @"PSEditTextCell",
+    @"default": @"",
+    @"defaults": @"com.jake0oo0.papergramprefs",
+    @"key": @"lock_username",
+    @"label": @"Feeds",
+    @"PostNotification": @"com.jake0oo0.papergram/prefsChange"
+  },
+
+  @{
+   @"cell": @"PSGroupCell",
+   @"label": @"Homescreen"
+ },
+ @{
+   @"cell": @"PSSwitchCell",
+   @"default": @YES,
+   @"defaults": @"com.jake0oo0.papergramprefs",
+   @"key": @"home_enabled",
+   @"label": @"Enabled",
+   @"PostNotification": @"com.jake0oo0.papergram/prefsChange",
+   @"cellClass": @"SKTintedSwitchCell"
  },
  @{
   @"cell": @"PSEditTextCell",
@@ -105,15 +105,67 @@
 },
 @{},
 @{
-		@"cell": @"PSSwitchCell",
-		@"default": @YES,
-		@"defaults": @"com.jake0oo0.papergramprefs",
-		@"key": @"embedUsername",
-		@"label": @"Embed Username",
-		@"PostNotification": @"com.jake0oo0.papergram/prefsChange",
-		@"cellClass": @"SKTintedSwitchCell"
+  @"cell": @"PSSwitchCell",
+  @"default": @YES,
+  @"defaults": @"com.jake0oo0.papergramprefs",
+  @"key": @"embedUsername",
+  @"label": @"Embed Username",
+  @"PostNotification": @"com.jake0oo0.papergram/prefsChange",
+  @"cellClass": @"SKTintedSwitchCell"
 },
-
+@{
+ @"cell": @"PSGroupCell",
+ @"label": @"Pictures"
+},
+@{
+ @"cell": @"PSSwitchCell",
+ @"default": @YES,
+ @"defaults": @"com.jake0oo0.papergramprefs",
+ @"key": @"random_pictures",
+ @"label": @"Random Pictures",
+ @"PostNotification": @"com.jake0oo0.papergram/prefsChange",
+ @"cellClass": @"SKTintedSwitchCell"
+},
+@{
+ @"cell": @"PSSwitchCell",
+ @"default": @YES,
+ @"defaults": @"com.jake0oo0.papergramprefs",
+ @"key": @"resize_pictures",
+ @"label": @"Resize Pictures (experimental)",
+ @"PostNotification": @"com.jake0oo0.papergram/prefsChange",
+ @"cellClass": @"SKTintedSwitchCell"
+},
+@{
+  @"cell": @"PSLinkListCell",
+  @"default": @5,
+  @"defaults": @"com.jake0oo0.papergramprefs",
+  @"key": @"activation_interval",
+  @"label": @"Activate Every...",
+  @"PostNotification": @"com.jake0oo0.papergram/prefsChange",
+  @"validTitles": @[
+    @"Never (Use Activator)",
+    @"1 minute",
+    @"5 minutes",
+    @"10 minutes",
+    @"Half-hour",
+    @"Hour",
+    @"90 minutes",
+    @"2 hours",
+    @"3 Hours"
+    ],
+  @"validValues": @[
+    @-1,
+    @1,
+    @5,
+    @10,
+    @30,
+    @60,
+    @90,
+    @120,
+    @180
+    ],
+  @"detail": @"PSListItemsController"
+},
 @{
   @"cell": @"PSGroupCell",
   @"label": @"Developers"
@@ -123,58 +175,7 @@
   @"cellClass": @"SKTintedCell",
   @"detail": @"DevelopersListCell",
   @"label": @"Developers"
-},
-@{
-     @"cell": @"PSGroupCell",
-     @"label": @"Pictures"
- },
-  @{
-     @"cell": @"PSSwitchCell",
-     @"default": @YES,
-     @"defaults": @"com.jake0oo0.papergramprefs",
-     @"key": @"random_pictures",
-     @"label": @"Random Pictures",
-     @"PostNotification": @"com.jake0oo0.papergram/prefsChange",
-     @"cellClass": @"SKTintedSwitchCell"
- },
- @{
-     @"cell": @"PSSwitchCell",
-     @"default": @YES,
-     @"defaults": @"com.jake0oo0.papergramprefs",
-     @"key": @"resize_pictures",
-     @"label": @"Resize Pictures (experimental)",
-     @"PostNotification": @"com.jake0oo0.papergram/prefsChange",
-     @"cellClass": @"SKTintedSwitchCell"
- },
- @{
-      @"cell": @"PSLinkListCell",
-      @"default": @5,
-      @"defaults": @"com.jake0oo0.papergramprefs",
-      @"key": @"activation_interval",
-      @"label": @"Activate Every...",
-      @"PostNotification": @"com.jake0oo0.papergram/prefsChange",
-      @"validTitles": @[
-				@"Never (Use Activator)",
-        @"5 minutes",
-        @"10 minutes",
-        @"Half-hour",
-        @"Hour",
-        @"90 minutes",
-        @"2 hours",
-        @"3 Hours"
-      ],
-      @"validValues": @[
-				@-1,
-        @5,
-        @10,
-        @30,
-        @60,
-        @90,
-        @120,
-        @180
-      ],
-      @"detail": @"PSListItemsController"
-    },
+}
 ];
 }
 
@@ -233,13 +234,13 @@
       @"cellClass": @"DeveloperCell",
       @"height": @100,
       @"action": @"openJakeTwitter"
-  },
-  @{
+    },
+    @{
       @"cell": @"PSLinkCell",
       @"cellClass": @"DesignerCell",
       @"height": @100,
       @"action": @"openAOkTwitter"
-  }
-  ];
+    }
+    ];
 }
 @end

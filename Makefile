@@ -8,7 +8,7 @@ ADDITIONAL_OBJCFLAGS = -fobjc-arc
 include $(THEOS)/makefiles/common.mk
 
 TWEAK_NAME = PaperGram
-PaperGram_FILES = Tweak.xm $(wildcard lib/*.m)
+PaperGram_FILES = Tweak.xm PaperGramHelper.m $(wildcard lib/*.m)
 PaperGram_LDFLAGS = -lxml2
 PaperGram_CFLAGS=-I$(SYSROOT)/usr/include/libxml2
 PaperGram_LDFLAGS += -Wl,-segalign,4000

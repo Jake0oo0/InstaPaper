@@ -3,6 +3,7 @@
 #import <UIKit/UIKit.h>
 #import "lib/TFHpple.h"
 #import <libactivator/libactivator.h>
+#import "PapeGramHelper.h"
 #import "InstaPaperChangerListener.h"
 
 static NSString *prefsLoc = @"/User/Library/Preferences/com.jake0oo0.papergram.plist";
@@ -46,111 +47,6 @@ static NSDictionary* loadPrefs() {
   return nil;
 }
 
-@interface PaperGramHelper : NSObject
-+ (void)downloadImageWithURL:(NSURL *)url completionBlock:(void (^)(BOOL succeeded, UIImage *image))completionBlock;
-+ (UIImage *)imageWithImage:(UIImage *)image convertToSize:(CGSize)size;
-+ (CGPoint) lowerLeftOf:(UIImage *)image;
-+ (CGSize) screenSize;
-+ (UIImage*) drawCaption:(NSString*)text inImage:(UIImage*)image;
-@end
-
-@implementation PaperGramHelper
-+ (void)downloadImageWithURL:(NSURL *)url completionBlock:(void (^)(BOOL succeeded, UIImage *image))completionBlock {
-  NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
-  [NSURLConnection sendAsynchronousRequest:request
-   queue:[NSOperationQueue mainQueue]
-   completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
-    if (!error) {
-      UIImage *image = [[UIImage alloc] initWithData:data];
-      completionBlock(YES,image);
-    } else {
-      completionBlock(NO,nil);
-    }
-  }];
-}
-+ (UIImage *)imageWithImage:(UIImage *)image convertToSize:(CGSize)size {
-  UIGraphicsBeginImageContext(size);
-  [image drawInRect:CGRectMake(0, 0, size.width, size.height)];
-  UIImage *destImage = UIGraphicsGetImageFromCurrentImageContext();
-  UIGraphicsEndImageContext();
-  return destImage;
-}
-+(CGSize) screenSize {
-	CGRect screenBounds = [[UIScreen mainScreen] bounds];
-	CGFloat screenScale = [[UIScreen mainScreen] scale];
-	CGSize screenSize = CGSizeMake(screenBounds.size.width * screenScale, screenBounds.size.height * screenScale);
-	//HBLogDebug(@"screenSize = %f,%f",screenSize.width, screenSize.height);
-	return screenSize;
-}
-+(CGPoint) lowerLeftOf:(UIImage *)image {
-	CGSize screenSize = [self screenSize];
-	CGPoint lowerLeft = CGPointMake(0,0);
-
-	if (image.size.width > screenSize.width) {
-		lowerLeft.x = image.size.width/2-screenSize.width/2;
-	} else {
-		lowerLeft.x = 0;
-	}
-
-	if (image.size.height > screenSize.height) {
-		lowerLeft.y = image.size.height-(image.size.height-screenSize.height)/2;
-	} else {
-		lowerLeft.y = image.size.height;
-	}
-	//HBLogDebug(@"lowerLeft = %f,%f", lowerLeft.x, lowerLeft.y)
-	return lowerLeft;
-
-}
-
-+(UIImage*) drawCaption:(NSString*)text inImage:(UIImage*)image
-{
-		//HBLogDebug(@"imagesize = %f,%f", image.size.width, image.size.height);
-		CGSize screenSize = [self screenSize];
-
-		UIFont *font = [UIFont boldSystemFontOfSize:12];
-		NSMutableParagraphStyle *style = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
-		style.alignment = NSTextAlignmentCenter;
-
-		NSShadow *shadow = [[NSShadow alloc] init];
-    shadow.shadowColor = [UIColor colorWithRed:((float)255) green:((float) 255) blue:((float) 0/255) alpha:0.7f];
-    shadow.shadowBlurRadius = 5;
-		//shadow.shadowOpacity = 0.3;
-    shadow.shadowOffset = CGSizeMake(0.0, 0.0);
-
-		//NSDictionary *attribute =	[NSDictionary dictionaryWithObjectsAndKeys:font, NSFontAttributeName, nil];
-		//UIColor* fontColor = [UIColor colorWithRed:((float)152/255) green:((float) 193/255) blue:((float) 193/255) alpha:1.0f];
-		//UIColor* fontColor = [UIColor colorWithRed:0.20 green:0.59 blue:0.37 alpha:1.0];
-		UIColor* fontColor = [UIColor blackColor];
-
-		NSDictionary *attribute = @{ NSFontAttributeName: font,
-									NSParagraphStyleAttributeName:style,
-									NSShadowAttributeName:shadow,
-									NSForegroundColorAttributeName:fontColor};
-
-    UIGraphicsBeginImageContext(image.size);
-
-    [image drawInRect:CGRectMake(0,0,image.size.width,image.size.height)];
-    //CGRect rect = CGRectMake(point.x, point.y, image.size.width, image.size.height);
-
-		CGPoint lowerLeft = [self lowerLeftOf:image];
-
-		//CGRect rect = CGRectMake(point.x, point.y, screenSize.width, screenSize.height);
-		//CGRect rect = CGRectMake(lowerLeft.x, lowerLeft.y-(font.lineHeight*2), screenSize.width, screenSize.height);
-		CGRect rect = CGRectMake(
-				lowerLeft.x,
-				lowerLeft.y-(font.lineHeight*1.5),
-				(screenSize.width>image.size.width ? image.size.width : screenSize.width),
-				(font.lineHeight*1.5)
-		);
-    [[UIColor whiteColor] set];
-    [text drawInRect:CGRectIntegral(rect) withAttributes:attribute];
-    UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-
-    return newImage;
-}
-@end
-
 static void setWallpaper(UIImage *image, PLWallpaperMode mode) {
   PLStaticWallpaperImageViewController *controller = [[%c(PLStaticWallpaperImageViewController) alloc] initWithUIImage:image];
 
@@ -176,7 +72,14 @@ static void reloadType(PLWallpaperMode paperMode) {
     feedUsername = lockUsername;
   }
 
-  if (!feedUsername) return;
+  if (!feedUsername) {
+    if (progressHUD) {
+      [progressHUD setMessage:@"Failed."];
+      [progressHUD dismissWithClickedButtonIndex:0 animated:YES];
+    };
+    triggeredByActivator = NO;
+    return;
+  }
 
 	//HBLogDebug(@"Feeds = %@", feedUsername);
 	//[progressHUD setMessage:@"Loading feed..."];
@@ -348,21 +251,8 @@ static void triggerWallpaperChange() {
   %orig;
 
 	triggerWallpaperChange();
-
-
 }
 
-// - (void)lockUIFromSource:(int)source withOptions:(id)options {
-//   %orig;
-
-//   if (enabled && source == 1 && homeEnabled) {
-//     if (lastActivationTime && [[NSDate date] timeIntervalSinceDate:lastActivationTime] < (activationInterval * 60)) return;
-//     if (lockEnabled) {
-//       return reloadType(PLWallpaperModeBoth);
-//     }
-//     reloadType(PLWallpaperModeLockScreen);
-//   }
-// }
 %end
 
 %end
@@ -402,10 +292,10 @@ static void triggerWallpaperChange() {
 
 + (void)load {
 	if ([[[NSBundle mainBundle] bundleIdentifier] isEqualToString:@"com.apple.springboard"])
-  	[[%c(LAActivator) sharedInstance] registerListener:[self new] forName:@"com.supermamon.instapaperchanger"];
+  	[[%c(LAActivator) sharedInstance] registerListener:[self new] forName:@"com.jake0oo0.instapaperchanger"];
 	/*
 	if ([LASharedActivator isRunningInsideSpringBoard]) {
-		[LASharedActivator registerListener:[self new] forName:@"com.supermamon.instapaperchanger"];
+		[LASharedActivator registerListener:[self new] forName:@"com.jake0oo0.instapaperchanger"];
 	}
 	*/
 }
@@ -417,7 +307,6 @@ static void handlePrefsChange(CFNotificationCenterRef center, void *observer, CF
 }
 
 %ctor {
-
   @autoreleasepool {
     loadPrefs();
 
@@ -425,7 +314,7 @@ static void handlePrefsChange(CFNotificationCenterRef center, void *observer, CF
       CFNotificationCenterGetDarwinNotifyCenter(),
       NULL,
       &handlePrefsChange,
-      (CFStringRef)@"com.jake0oo0.PaperGram/prefsChange",
+      (CFStringRef)@"com.jake0oo0.papergram/prefsChange",
       NULL,
       CFNotificationSuspensionBehaviorCoalesce);
 

@@ -2,6 +2,10 @@
 
 Automatically set your iOS background to pictures straight from a user's Instagram feed.
 
+## Contributors
+
+supermamon <monvelasquez@gmail.com>
+
 ## Depiction
 
 Automatically set your iOS wallpaper to pictures from an Instagram feed.

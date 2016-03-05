@@ -23,24 +23,24 @@
 
 
 - (UIColor*) tintColor { return [UIColor colorWithRed:0.071 green:0.337 blue:0.533 alpha:1]; }
--(BOOL)tintNavigationTitleText { 
-  return YES; 
+-(BOOL)tintNavigationTitleText {
+  return YES;
 }
 
 -(NSString *)shareMessage {
     return @"I'm using #PaperGram by @itsjake88 to set my iOS background to Instagram pics. Check it out!";
 }
 
--(NSString *)headerText { 
-  return @"PaperGram"; 
+-(NSString *)headerText {
+  return @"PaperGram";
 }
 
 -(NSString *)headerSubText {
   return @"Instagram Wallpapers";
 }
 
--(NSString *)customTitle { 
-  return @"PaperGram"; 
+-(NSString *)customTitle {
+  return @"PaperGram";
 }
 
 -(NSArray*) customSpecifiers
@@ -78,7 +78,7 @@
       @"default": @"",
       @"defaults": @"com.jake0oo0.papergramprefs",
       @"key": @"lock_username",
-      @"label": @"Feed Username",
+      @"label": @"Feeds",
       @"PostNotification": @"com.jake0oo0.papergram/prefsChange"
   },
 
@@ -100,9 +100,20 @@
   @"default": @"",
   @"defaults": @"com.jake0oo0.papergramprefs",
   @"key": @"home_username",
-  @"label": @"Feed Username",
+  @"label": @"Feeds",
   @"PostNotification": @"com.jake0oo0.papergram/prefsChange"
 },
+@{},
+@{
+		@"cell": @"PSSwitchCell",
+		@"default": @YES,
+		@"defaults": @"com.jake0oo0.papergramprefs",
+		@"key": @"embedUsername",
+		@"label": @"Embed Username",
+		@"PostNotification": @"com.jake0oo0.papergram/prefsChange",
+		@"cellClass": @"SKTintedSwitchCell"
+},
+
 @{
   @"cell": @"PSGroupCell",
   @"label": @"Developers"
@@ -143,15 +154,17 @@
       @"label": @"Activate Every...",
       @"PostNotification": @"com.jake0oo0.papergram/prefsChange",
       @"validTitles": @[
-        @"5 Minutes",
-        @"10 Minutes",
-        @"Half Hour",
+				@"Never (Use Activator)",
+        @"5 minutes",
+        @"10 minutes",
+        @"Half-hour",
         @"Hour",
-        @"90 Minutes",
-        @"Two Hours",
+        @"90 minutes",
+        @"2 hours",
         @"3 Hours"
       ],
       @"validValues": @[
+				@-1,
         @5,
         @10,
         @30,
@@ -173,7 +186,7 @@
   }
   return settings[specifier.properties[@"key"]];
 }
- 
+
 -(void) setPreferenceValue:(id)value specifier:(PSSpecifier *)specifier {
   NSMutableDictionary *defaults = [NSMutableDictionary dictionary];
   [defaults addEntriesFromDictionary:[NSDictionary dictionaryWithContentsOfFile:valuesPath]];

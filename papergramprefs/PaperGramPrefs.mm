@@ -131,7 +131,7 @@
  @"default": @YES,
  @"defaults": @"com.jake0oo0.papergramprefs",
  @"key": @"resize_pictures",
- @"label": @"Resize Pictures (experimental)",
+ @"label": @"Resize Pictures",
  @"PostNotification": @"com.jake0oo0.papergram/prefsChange",
  @"cellClass": @"SKTintedSwitchCell"
 },
@@ -168,6 +168,25 @@
 },
 @{
   @"cell": @"PSGroupCell",
+  @"label": @"Manual Reload"
+},
+@{
+@"cell": @"PSButtonCell",
+@"action": @"cycleLockscreen:",
+@"label": @"Cycle Lockscreen"
+},
+@{
+@"cell": @"PSButtonCell",
+@"action": @"cycleHomescreen:",
+@"label": @"Cycle Homescreen"
+},
+@{
+@"cell": @"PSButtonCell",
+@"action": @"cycleBoth:",
+@"label": @"Cycle Both"
+},
+@{
+  @"cell": @"PSGroupCell",
   @"label": @"Developers"
 },
 @{
@@ -175,8 +194,30 @@
   @"cellClass": @"SKTintedCell",
   @"detail": @"DevelopersListCell",
   @"label": @"Developers"
-}
+},
+@{
+@"cell": @"PSButtonCell",
+@"action": @"openPaypal:",
+@"label": @"Donate (Paypal)",
+@"icon": @"PayPal.png"
+},
 ];
+}
+
+- (void)openPayPal:(id)sender {
+  [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"https://paypal.me/itsjake"]];
+}
+
+- (void)cycleLockscreen:(id)sender {
+  CFNotificationCenterPostNotification(CFNotificationCenterGetDarwinNotifyCenter(), CFSTR("com.jake0oo0.papergram/cycleLock"), NULL, NULL, TRUE);
+}
+
+- (void)cycleHomescreen:(id)sender {
+CFNotificationCenterPostNotification(CFNotificationCenterGetDarwinNotifyCenter(), CFSTR("com.jake0oo0.papergram/cycleHome"), NULL, NULL, TRUE);
+}
+
+- (void)cycleBoth:(id)sender {
+  CFNotificationCenterPostNotification(CFNotificationCenterGetDarwinNotifyCenter(), CFSTR("com.jake0oo0.papergram/cycleBoth"), NULL, NULL, TRUE);
 }
 
 // http://iphonedevwiki.net/index.php/PreferenceBundles

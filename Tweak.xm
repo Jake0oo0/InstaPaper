@@ -306,6 +306,20 @@ static void handlePrefsChange(CFNotificationCenterRef center, void *observer, CF
   loadPrefs();
 }
 
+static void handleReloadLock(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
+  reloadType(PLWallpaperModeLockScreen);
+}
+
+static void handleReloadHome(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
+  reloadType(PLWallpaperModeHomeScreen);
+}
+
+static void handleReloadBoth(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
+  reloadType(PLWallpaperModeBoth);
+}
+
+
+
 %ctor {
   @autoreleasepool {
     loadPrefs();
@@ -315,6 +329,28 @@ static void handlePrefsChange(CFNotificationCenterRef center, void *observer, CF
       NULL,
       &handlePrefsChange,
       (CFStringRef)@"com.jake0oo0.papergram/prefsChange",
+      NULL,
+      CFNotificationSuspensionBehaviorCoalesce);
+
+    CFNotificationCenterAddObserver(
+      CFNotificationCenterGetDarwinNotifyCenter(),
+      NULL,
+      &handleReloadLock,
+      (CFStringRef)@"com.jake0oo0.papergram/cycleLock",
+      NULL,
+      CFNotificationSuspensionBehaviorCoalesce);
+    CFNotificationCenterAddObserver(
+      CFNotificationCenterGetDarwinNotifyCenter(),
+      NULL,
+      &handleReloadHome,
+      (CFStringRef)@"com.jake0oo0.papergram/cycleHome",
+      NULL,
+      CFNotificationSuspensionBehaviorCoalesce);
+    CFNotificationCenterAddObserver(
+      CFNotificationCenterGetDarwinNotifyCenter(),
+      NULL,
+      &handleReloadBoth,
+      (CFStringRef)@"com.jake0oo0.papergram/cycleBoth",
       NULL,
       CFNotificationSuspensionBehaviorCoalesce);
 

@@ -4,13 +4,13 @@
 #import "lib/TFHpple.h"
 #import <libactivator/libactivator.h>
 #import "InstaPaperChangerListener.h"
-#import "ProgressHUD.h"
 
 static NSString *prefsLoc = @"/User/Library/Preferences/com.jake0oo0.papergram.plist";
 
 static NSString *lockUsername = nil;
 static BOOL lockEnabled = YES;
 static NSString *homeUsername = nil;
+static BOOL embedUsername = YES;
 static BOOL homeEnabled = YES;
 static BOOL enabled = YES;
 static BOOL randomPictures = YES;
@@ -18,12 +18,11 @@ static BOOL resizePictures = YES;
 static int activationInterval = 5;
 
 static BOOL triggeredByActivator = NO;
-
-
 static NSDate *lastActivationTime = nil;
+UIAlertView *progressHUD;
 
 static NSDictionary* loadPrefs() {
-	HBLogDebug(@"Loading preferences...");
+	//HBLogDebug(@"Loading preferences...");
   BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath:prefsLoc];
 
   if (exists) {
@@ -34,7 +33,7 @@ static NSDictionary* loadPrefs() {
       lockEnabled = [prefs objectForKey:@"lock_enabled"] ? [[prefs objectForKey:@"lock_enabled"] boolValue] : YES;
       lockUsername = [prefs objectForKey:@"lock_username"] ? [prefs objectForKey:@"lock_username"] : nil;
       homeUsername = [prefs objectForKey:@"home_username"] ? [prefs objectForKey:@"home_username"] : nil;
-
+			embedUsername = [prefs objectForKey:@"embedUsername"] ? [[prefs objectForKey:@"embedUsername"] boolValue] : YES;
       randomPictures = [prefs objectForKey:@"random_pictures"] ? [[prefs objectForKey:@"random_pictures"] boolValue] : YES;
       resizePictures = [prefs objectForKey:@"resize_pictures"] ? [[prefs objectForKey:@"resize_pictures"] boolValue] : YES;
 
@@ -80,7 +79,7 @@ static NSDictionary* loadPrefs() {
 	CGRect screenBounds = [[UIScreen mainScreen] bounds];
 	CGFloat screenScale = [[UIScreen mainScreen] scale];
 	CGSize screenSize = CGSizeMake(screenBounds.size.width * screenScale, screenBounds.size.height * screenScale);
-	HBLogDebug(@"screenSize = %f,%f",screenSize.width, screenSize.height);
+	//HBLogDebug(@"screenSize = %f,%f",screenSize.width, screenSize.height);
 	return screenSize;
 }
 +(CGPoint) lowerLeftOf:(UIImage *)image {
@@ -98,14 +97,14 @@ static NSDictionary* loadPrefs() {
 	} else {
 		lowerLeft.y = image.size.height;
 	}
-	HBLogDebug(@"lowerLeft = %f,%f", lowerLeft.x, lowerLeft.y)
+	//HBLogDebug(@"lowerLeft = %f,%f", lowerLeft.x, lowerLeft.y)
 	return lowerLeft;
 
 }
 
 +(UIImage*) drawCaption:(NSString*)text inImage:(UIImage*)image
 {
-		HBLogDebug(@"imagesize = %f,%f", image.size.width, image.size.height);
+		//HBLogDebug(@"imagesize = %f,%f", image.size.width, image.size.height);
 		CGSize screenSize = [self screenSize];
 
 		UIFont *font = [UIFont boldSystemFontOfSize:12];
@@ -179,13 +178,13 @@ static void reloadType(PLWallpaperMode paperMode) {
 
   if (!feedUsername) return;
 
-	HBLogDebug(@"Feeds = %@", feedUsername);
-
+	//HBLogDebug(@"Feeds = %@", feedUsername);
+	//[progressHUD setMessage:@"Loading feed..."];
 	/*support multiple accounts, comma separted*/
 	NSArray *array = [feedUsername componentsSeparatedByString:@","];
 	feedUsername = [array objectAtIndex:( arc4random() % [array count] )];
 
-	HBLogDebug(@"Selected feed = %@", feedUsername);
+	//HBLogDebug(@"Selected feed = %@", feedUsername);
 
   NSString *instaString = [NSString stringWithFormat:@"https://www.instagram.com/%@/", feedUsername];
   NSURL *instaUrl = [NSURL URLWithString:instaString];
@@ -264,39 +263,37 @@ static void reloadType(PLWallpaperMode paperMode) {
     if (!picURL) return;
 
     // NSLog(@"URL %@", picURL);
-		HBLogDebug(@"Downloading image...");
+		[progressHUD setMessage:@"Downloading image..."];
     [PaperGramHelper downloadImageWithURL:[NSURL URLWithString:picURL] completionBlock:^(BOOL succeeded, UIImage *image) {
       if (succeeded && image) {
-				HBLogDebug(@"Downloading image...Success.");
-
 				/* Put the resizing here instead */
 				if (resizePictures) {
-					HBLogDebug(@"Resizing...");
+					[progressHUD setMessage:@"Resizing..."];
 			    CGRect screenBounds = [[UIScreen mainScreen] bounds];
 			    CGFloat screenScale = [[UIScreen mainScreen] scale];
 			    CGSize screenSize = CGSizeMake(screenBounds.size.width * screenScale, screenBounds.size.height * screenScale);
 			    image = [PaperGramHelper imageWithImage:image convertToSize:screenSize];
 			  }
 				/* add the username */
-				HBLogDebug(@"Captioning...");
-				NSString * caption = [NSString stringWithFormat:@"@%@", feedUsername];
-				image = [PaperGramHelper drawCaption:caption inImage:image];
-
-				HBLogDebug(@"Setting wallpaper(s)...");
+				if (embedUsername) {
+					[progressHUD setMessage:@"Captioning..."];
+					NSString * caption = [NSString stringWithFormat:@"@%@", feedUsername];
+					image = [PaperGramHelper drawCaption:caption inImage:image];
+				}
+				[progressHUD setMessage:@"Setting wallpaper(s)..."];
         setWallpaper(image, paperMode);
 
-				HBLogDebug(@"Dismissing ProgressHUD");
-				if (triggeredByActivator) [ProgressHUD showSuccess:@"Done"];
-				HBLogDebug(@"Demarking activator flag.");
+				if (progressHUD) {
+					[progressHUD setMessage:@"Done."];
+					[progressHUD dismissWithClickedButtonIndex:0 animated:YES];
+				};
 				triggeredByActivator = NO;
-				//[ProgressHUD dismiss];
       } else {
-				HBLogDebug(@"Downloading image...Failed.");
-				HBLogDebug(@"Dismissing ProgressHUD");
-				if (triggeredByActivator) [ProgressHUD showError:@"Failed"];
-				HBLogDebug(@"Demarking activator flag.");
+				if (progressHUD) {
+					[progressHUD setMessage:@"Failed."];
+					[progressHUD dismissWithClickedButtonIndex:0 animated:YES];
+				};
 				triggeredByActivator = NO;
-				//[ProgressHUD dismiss];
 			}
 
 
@@ -307,30 +304,30 @@ static void reloadType(PLWallpaperMode paperMode) {
 }
 
 static void triggerWallpaperChange() {
-	HBLogDebug(@"triggerWallpaperChange called.");
-	if (triggeredByActivator)	HBLogDebug(@"Triggered by activator.");
+	//HBLogDebug(@"triggerWallpaperChange called.");
+	//if (triggeredByActivator)	HBLogDebug(@"Triggered by activator.");
 
 	if (enabled) {
 
 		int effActivationInterval = activationInterval;
 		if (activationInterval < 1) {
-			HBLogDebug(@"Activation interval is Never.")
+			//HBLogDebug(@"Activation interval is Never.")
 			effActivationInterval = 99999;
 		}
 
-		HBLogDebug(@"effActivationInterval = %d", effActivationInterval);
+		//HBLogDebug(@"effActivationInterval = %d", effActivationInterval);
 
 		if (!lastActivationTime) {
 			lastActivationTime = [NSDate date];
 			if (!triggeredByActivator)	return;
 		}
 		if (!triggeredByActivator) {
-			HBLogDebug(@"Performing lastActivationTime check");
+			//HBLogDebug(@"Performing lastActivationTime check");
 			// perform lastActivationTime check. otherwise, skip this and change the wallpaper
 			if (!lastActivationTime || [[NSDate date] timeIntervalSinceDate:lastActivationTime] < (effActivationInterval * 60)) return;
 		}
 
-		HBLogDebug(@"Time to change wallpapers.")
+		//HBLogDebug(@"Time to change wallpapers.")
 
 		lastActivationTime = [NSDate date];
 		if (homeEnabled && lockEnabled) {
@@ -373,24 +370,27 @@ static void triggerWallpaperChange() {
 @implementation InstaPaperChangerListener
 
 - (void)activator:(LAActivator *)activator receiveEvent:(LAEvent *)event {
-	HBLogDebug(@"**********************************");
-	HBLogDebug(@"*   Activator Trigger Received   *");
-	HBLogDebug(@"**********************************");
+	//HBLogDebug(@"**********************************");
+	//HBLogDebug(@"*   Activator Trigger Received   *");
+	//HBLogDebug(@"**********************************");
 
 	if (triggeredByActivator) {
-		HBLogDebug(@"Wallpaper change aborted. Still running previous change.");
+		//HBLogDebug(@"Wallpaper change aborted. Still running previous change.");
 		[event setHandled:YES];
 		return;
 	}
 	loadPrefs();
-	HBLogDebug(@"Marking activator flag.");
+	//HBLogDebug(@"Marking activator flag.");
 	triggeredByActivator = YES;
 
-	HBLogDebug(@"Show progressHUD");
-	[ProgressHUD dismiss];
-	[ProgressHUD show:@"Updating wallpaper..."];
+	//HBLogDebug(@"Show progressHUD");
+	progressHUD = [[UIAlertView alloc] initWithTitle:@"PaperGram" message:@"Running PaperGram..." delegate:self cancelButtonTitle:nil otherButtonTitles:nil];
+	[progressHUD show];
 
-	HBLogDebug(@"Call triggerWallpaperChange");
+	//[ProgressHUD dismiss];
+	//[ProgressHUD show:@"Updating wallpaper..."];
+
+	//HBLogDebug(@"Call triggerWallpaperChange");
 	triggerWallpaperChange();
  	// Activate your plugin
  	[event setHandled:YES]; // To prevent the default OS implementation

@@ -4,7 +4,7 @@
 #import "lib/TFHpple.h"
 #import <libactivator/libactivator.h>
 #import "PapeGramHelper.h"
-#import "InstaPaperChangerListener.h"
+#import "PaperGramChangerListener.h"
 
 static NSString *prefsLoc = @"/User/Library/Preferences/com.jake0oo0.papergram.plist";
 
@@ -257,7 +257,7 @@ static void triggerWallpaperChange() {
 
 %end
 
-@implementation InstaPaperChangerListener
+@implementation PaperGramChangerListener
 
 - (void)activator:(LAActivator *)activator receiveEvent:(LAEvent *)event {
 	//HBLogDebug(@"**********************************");

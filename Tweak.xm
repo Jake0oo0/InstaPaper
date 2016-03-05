@@ -292,10 +292,10 @@ static void triggerWallpaperChange() {
 
 + (void)load {
 	if ([[[NSBundle mainBundle] bundleIdentifier] isEqualToString:@"com.apple.springboard"])
-  	[[%c(LAActivator) sharedInstance] registerListener:[self new] forName:@"com.jake0oo0.instapaperchanger"];
+  	[[%c(LAActivator) sharedInstance] registerListener:[self new] forName:@"com.jake0oo0.papergramchanger"];
 	/*
 	if ([LASharedActivator isRunningInsideSpringBoard]) {
-		[LASharedActivator registerListener:[self new] forName:@"com.jake0oo0.instapaperchanger"];
+		[LASharedActivator registerListener:[self new] forName:@"com.jake0oo0.papergramchanger"];
 	}
 	*/
 }

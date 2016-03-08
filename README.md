@@ -4,7 +4,7 @@ Automatically set your iOS background to pictures straight from a user's Instagr
 
 ## Contributors
 
-supermamon <monvelasquez@gmail.com>
+[supermamon](http://github.com/supermamon)
 
 ## Depiction
 

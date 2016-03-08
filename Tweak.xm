@@ -43,7 +43,7 @@ static NSDictionary* loadPrefs() {
       showProgressHud = [prefs objectForKey:@"progress_hud"] ? [[prefs objectForKey:@"progress_hud"] boolValue] : NO;
       wifiOnly = [prefs objectForKey:@"wifi_only"] ? [[prefs objectForKey:@"wifi_only"] boolValue] : NO;
 
-      activationInterval = [prefs objectForKey:@"random_pictures"] ? [[prefs objectForKey:@"random_pictures"] intValue] : 5;
+      activationInterval = [prefs objectForKey:@"activation_interval"] ? [[prefs objectForKey:@"activation_interval"] intValue] : 5;
 
       return prefs;
     }
@@ -213,7 +213,11 @@ static void reloadType(PLWallpaperMode paperMode) {
 
 static void triggerWallpaperChange() {
 	//HBLogDebug(@"triggerWallpaperChange called.");
-	//if (triggeredByActivator)	HBLogDebug(@"Triggered by activator.");
+	if (triggeredByActivator)	{
+		//HBLogDebug(@"Triggered by activator.");
+	} else {
+	  //HBLogDebug(@"Triggered by unlock.");
+	}
 
 	if (enabled) {
 
@@ -229,22 +233,22 @@ static void triggerWallpaperChange() {
       }
     }
 
-		int effActivationInterval = activationInterval;
-		if (activationInterval < 1) {
-			//HBLogDebug(@"Activation interval is Never.")
-			effActivationInterval = 99999;
-		}
-
-		//HBLogDebug(@"effActivationInterval = %d", effActivationInterval);
+		//HBLogDebug(@"Activation interval is %d.",activationInterval);
+		//HBLogDebug(@"lastActivationTime = %@", lastActivationTime);
 
 		if (!lastActivationTime) {
 			lastActivationTime = [NSDate date];
 			if (!triggeredByActivator)	return;
 		}
+
 		if (!triggeredByActivator) {
 			//HBLogDebug(@"Performing lastActivationTime check");
 			// perform lastActivationTime check. otherwise, skip this and change the wallpaper
-			if (!lastActivationTime || [[NSDate date] timeIntervalSinceDate:lastActivationTime] < (effActivationInterval * 60)) return;
+			// Add the 'Never' check condition
+			if (!lastActivationTime || [[NSDate date] timeIntervalSinceDate:lastActivationTime] < (activationInterval * 60) || activationInterval==-1) {
+				//HBLogDebug(@"Not yet time to change. Exiting.");
+				return;
+			}
 		}
 
 		//HBLogDebug(@"Time to change wallpapers.")

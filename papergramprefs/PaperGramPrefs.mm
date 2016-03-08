@@ -111,15 +111,6 @@
       @"PostNotification": @"com.jake0oo0.papergram/prefsChange"
     },
     @{
-      @"cell": @"PSSwitchCell",
-      @"default": @YES,
-      @"defaults": @"com.jake0oo0.papergramprefs",
-      @"key": @"embedUsername",
-      @"label": @"Embed Username",
-      @"PostNotification": @"com.jake0oo0.papergram/prefsChange",
-      @"cellClass": @"SKTintedSwitchCell"
-    },
-    @{
       @"cell": @"PSGroupCell",
       @"label": @"Pictures"
     },
@@ -138,6 +129,15 @@
       @"defaults": @"com.jake0oo0.papergramprefs",
       @"key": @"resize_pictures",
       @"label": @"Resize Pictures",
+      @"PostNotification": @"com.jake0oo0.papergram/prefsChange",
+      @"cellClass": @"SKTintedSwitchCell"
+    },
+    @{
+      @"cell": @"PSSwitchCell",
+      @"default": @YES,
+      @"defaults": @"com.jake0oo0.papergramprefs",
+      @"key": @"embedUsername",
+      @"label": @"Embed Username",
       @"PostNotification": @"com.jake0oo0.papergram/prefsChange",
       @"cellClass": @"SKTintedSwitchCell"
     },
@@ -224,7 +224,7 @@
     },
     @{
       @"cell": @"PSButtonCell",
-      @"action": @"openPaypal:",
+      @"action": @"openPayPal:",
       @"label": @"Donate (PayPal)",
       @"icon": @"PayPal.png"
     },

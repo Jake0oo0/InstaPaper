@@ -43,6 +43,15 @@ Not affiliated with Instagram or Facebook. Compatible with iOS 9. Instagram not 
 * Set two different images when using same feed & random pictures
 * Add WiFi only toggle - applies to all activation methods, except manual cycling
 
+### Release 1.1.1
+
+* Fix activation interval not being loaded correctly - @supermamon
+
+### Release 1.1.2
+
+* Fix donate button not working correctly
+* Fix settings being out of order
+
 
 ## Building
 * Setup [theos](http://iphonedevwiki.net/index.php/Theos/Setup) on your system.
